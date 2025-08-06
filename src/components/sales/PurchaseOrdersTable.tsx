@@ -422,13 +422,9 @@ export const PurchaseOrdersTable: React.FC<PurchaseOrdersTableProps> = ({
     });
   }, []);
 
-  // Memoize sorted PO numbers to prevent unnecessary re-renders
+  // Get PO numbers in the order they are provided (already sorted by parent)
   const sortedPONumbers = useMemo(() => {
-    return Object.keys(filteredPOs).sort((a, b) => {
-      const dateA = new Date(filteredPOs[a][0].created_at);
-      const dateB = new Date(filteredPOs[b][0].created_at);
-      return dateB.getTime() - dateA.getTime();
-    });
+    return Object.keys(filteredPOs);
   }, [filteredPOs]);
 
   // Render column header with resize and drag functionality
