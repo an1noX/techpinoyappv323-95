@@ -4,7 +4,7 @@ import type { Database } from './types'
 // Self-hosted Supabase configuration with fallbacks
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 
                    import.meta.env.NEXT_PUBLIC_SUPABASE_URL || 
-                   'https://db.techpinoy.net'
+                   'https://db1.techpinoy.net'
 
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 
                        import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 
