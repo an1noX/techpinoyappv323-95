@@ -495,11 +495,10 @@ export const PurchaseOrdersTable: React.FC<PurchaseOrdersTableProps> = ({
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-64 bg-popover border border-border shadow-lg z-[60]" align="start">
               <DropdownMenuItem 
-                onClick={() => onSort('date')} 
-                className="cursor-pointer flex items-center justify-between"
+                onClick={() => setFilters({...filters, dateRange: 'all'})} 
+                className={cn("cursor-pointer", filters.dateRange === 'all' && 'bg-accent font-medium')}
               >
-                <span>All Dates</span>
-                {getSortIcon('date')}
+                All Dates
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem 
@@ -604,11 +603,10 @@ export const PurchaseOrdersTable: React.FC<PurchaseOrdersTableProps> = ({
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56 bg-popover border border-border shadow-lg z-[60]" align="start">
               <DropdownMenuItem 
-                onClick={() => onSort('po')} 
-                className="cursor-pointer flex items-center justify-between"
+                onClick={() => setFilters({...filters, poNumber: 'all'})} 
+                className={cn("cursor-pointer", filters.poNumber === 'all' && 'bg-accent font-medium')}
               >
-                <span>All PO Numbers</span>
-                {getSortIcon('po')}
+                All PO Numbers
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem 
@@ -643,11 +641,10 @@ export const PurchaseOrdersTable: React.FC<PurchaseOrdersTableProps> = ({
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56 bg-popover border border-border shadow-lg z-[60]" align="start">
               <DropdownMenuItem 
-                onClick={() => onSort('dr')} 
-                className="cursor-pointer flex items-center justify-between"
+                onClick={() => setFilters({...filters, drNumber: 'all'})} 
+                className={cn("cursor-pointer", filters.drNumber === 'all' && 'bg-accent font-medium')}
               >
-                <span>All DR Numbers</span>
-                {getSortIcon('dr')}
+                All DR Numbers
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem 
@@ -682,11 +679,10 @@ export const PurchaseOrdersTable: React.FC<PurchaseOrdersTableProps> = ({
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56 bg-popover border border-border shadow-lg z-[60]" align="start">
               <DropdownMenuItem 
-                onClick={() => onSort('si')} 
-                className="cursor-pointer flex items-center justify-between"
+                onClick={() => setFilters({...filters, siNumber: 'all'})} 
+                className={cn("cursor-pointer", filters.siNumber === 'all' && 'bg-accent font-medium')}
               >
-                <span>All SI Numbers</span>
-                {getSortIcon('si')}
+                All SI Numbers
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem 
@@ -711,13 +707,9 @@ export const PurchaseOrdersTable: React.FC<PurchaseOrdersTableProps> = ({
 
       case 'amount':
         content = (
-          <div 
-            className="cursor-pointer hover:bg-muted/50 transition-colors p-1 rounded flex items-center justify-center md:justify-between"
-            onClick={() => onSort('amount')}
-          >
+          <div className="flex items-center justify-center md:justify-between">
             <span className="hidden md:inline">Total Amount</span>
             <span className="md:hidden text-xs">Amount</span>
-            {getSortIcon('amount')}
           </div>
         );
         break;
