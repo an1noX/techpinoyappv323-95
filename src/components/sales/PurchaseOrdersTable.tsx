@@ -165,10 +165,16 @@ export const PurchaseOrdersTable: React.FC<PurchaseOrdersTableProps> = ({
   
   const { poSuggestions, getPOSuggestions, clearSuggestions } = usePOSuggestions();
 
-  // Get visible and ordered columns
+  // Get visible columns with proper width data
   const displayColumns = useMemo(() => {
-    return sortedColumns.filter(col => visibleColumns.includes(col.key));
-  }, [sortedColumns, visibleColumns]);
+    return COLUMN_CONFIG
+      .filter(col => visibleColumns.includes(col.key))
+      .map(configCol => {
+        // Find the corresponding column with width data from sortedColumns
+        const columnWithWidth = sortedColumns.find(c => c.key === configCol.key);
+        return columnWithWidth || { ...configCol, width: configCol.defaultWidth };
+      });
+  }, [visibleColumns, sortedColumns]);
 
   // Memoize filter options
   const filterOptions = useMemo(() => ({
