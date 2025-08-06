@@ -1,0 +1,162 @@
+
+import { EnhancedTonerType } from "@/types/toners";
+
+// Static product data with enhanced mock content
+export const staticProducts: EnhancedTonerType[] = [
+  {
+    id: "1",
+    name: "HP 26A Black LaserJet Toner Cartridge (CF226A)",
+    price: 1899.99,
+    manufacturer: "HP",
+    type: "toner",
+    stock: 25,
+    imageUrl: 'https://placehold.co/300x300/0066cc/ffffff?text=HP+26A+Black',
+    category: "Laser Toner",
+    brand: "HP",
+    quantityInStock: 25,
+    description: "Original HP 26A black toner cartridge delivers professional quality prints with sharp text and crisp images. Page yield: approximately 3,100 pages."
+  },
+  {
+    id: "2",
+    name: "Canon PGI-280XXL Super High Yield Black Ink",
+    price: 1299.99,
+    manufacturer: "Canon",
+    type: "ink",
+    stock: 18,
+    imageUrl: 'https://placehold.co/300x300/cc0000/ffffff?text=Canon+PGI-280XXL',
+    category: "Inkjet Cartridge",
+    brand: "Canon",
+    quantityInStock: 18,
+    description: "Canon PGI-280XXL super high yield black ink cartridge for PIXMA printers. Page yield: approximately 600 pages of crisp, fade-resistant text."
+  },
+  {
+    id: "3",
+    name: "Brother TN-760 High Yield Black Toner Cartridge",
+    price: 1599.99,
+    manufacturer: "Brother",
+    type: "toner",
+    stock: 15,
+    imageUrl: 'https://placehold.co/300x300/ff6600/ffffff?text=Brother+TN-760',
+    category: "Laser Toner",
+    brand: "Brother",
+    quantityInStock: 15,
+    description: "Brother TN-760 high yield black toner cartridge for HL-L2350DW, HL-L2370DW, and other compatible Brother printers. Page yield: approximately 3,000 pages."
+  },
+  {
+    id: "4",
+    name: "Epson 702 DURABrite Ultra Cyan Ink Cartridge",
+    price: 1099.99,
+    manufacturer: "Epson",
+    type: "ink",
+    stock: 30,
+    imageUrl: 'https://placehold.co/300x300/00ccff/ffffff?text=Epson+702+Cyan',
+    category: "Inkjet Cartridge",
+    brand: "Epson",
+    quantityInStock: 30,
+    description: "Epson 702 DURABrite Ultra cyan ink cartridge delivers vibrant colors and sharp text. Smudge, fade and water resistant. Page yield: approximately 300 pages."
+  },
+  {
+    id: "5",
+    name: "Samsung MLT-D111S Standard Yield Black Toner",
+    price: 1799.99,
+    manufacturer: "Samsung",
+    type: "toner",
+    stock: 12,
+    imageUrl: 'https://placehold.co/300x300/333333/ffffff?text=Samsung+MLT-D111S',
+    category: "Laser Toner",
+    brand: "Samsung",
+    quantityInStock: 12,
+    description: "Samsung MLT-D111S standard yield black toner cartridge for Xpress SL-M2020W, SL-M2070W printers. Page yield: approximately 1,000 pages."
+  },
+  {
+    id: "6",
+    name: "Lexmark 71B10K0 Black Return Program Toner",
+    price: 2199.99,
+    manufacturer: "Lexmark",
+    type: "toner",
+    stock: 8,
+    imageUrl: 'https://placehold.co/300x300/006699/ffffff?text=Lexmark+71B10K0',
+    category: "Laser Toner",
+    brand: "Lexmark",
+    quantityInStock: 8,
+    description: "Lexmark 71B10K0 black return program toner cartridge for CS317dn, CS417dn, CS517de printers. Page yield: approximately 3,000 pages."
+  },
+  {
+    id: "7",
+    name: "Xerox 106R03745 Cyan Standard Capacity Toner",
+    price: 2299.99,
+    manufacturer: "Xerox",
+    type: "toner",
+    stock: 9,
+    imageUrl: 'https://placehold.co/300x300/00ff99/ffffff?text=Xerox+106R03745',
+    category: "Laser Toner",
+    brand: "Xerox",
+    quantityInStock: 9,
+    description: "Xerox 106R03745 cyan standard capacity toner cartridge for VersaLink C7000 series printers. Page yield: approximately 10,100 pages."
+  },
+  {
+    id: "8",
+    name: "HP 63XL High Yield Tri-color Ink Cartridge",
+    price: 1499.99,
+    manufacturer: "HP",
+    type: "ink",
+    stock: 22,
+    imageUrl: 'https://placehold.co/300x300/ff9900/ffffff?text=HP+63XL+Color',
+    category: "Inkjet Cartridge",
+    brand: "HP",
+    quantityInStock: 22,
+    description: "HP 63XL high yield tri-color ink cartridge for DeskJet, ENVY, and OfficeJet printers. Page yield: approximately 330 color pages."
+  },
+  {
+    id: "9",
+    name: "Canon CLI-281 Photo Blue Ink Cartridge",
+    price: 899.99,
+    manufacturer: "Canon",
+    type: "ink",
+    stock: 16,
+    imageUrl: 'https://placehold.co/300x300/3366ff/ffffff?text=Canon+CLI-281+PB',
+    category: "Inkjet Cartridge",
+    brand: "Canon",
+    quantityInStock: 16,
+    description: "Canon CLI-281 photo blue ink cartridge for PIXMA TS6120, TS8120, TS9120 printers. Delivers exceptional photo quality and color accuracy."
+  },
+  {
+    id: "10",
+    name: "Brother DR-730 Drum Unit",
+    price: 2499.99,
+    manufacturer: "Brother",
+    type: "drum",
+    stock: 7,
+    imageUrl: 'https://placehold.co/300x300/669900/ffffff?text=Brother+DR-730',
+    category: "Drum Unit",
+    brand: "Brother",
+    quantityInStock: 7,
+    description: "Brother DR-730 drum unit for HL-L2350DW, HL-L2370DW, HL-L2390DW, HL-L2395DW printers. Page yield: approximately 12,000 pages."
+  },
+  {
+    id: "11",
+    name: "Epson 410XL High Capacity Black Ink",
+    price: 1199.99,
+    manufacturer: "Epson",
+    type: "ink",
+    stock: 20,
+    imageUrl: 'https://placehold.co/300x300/000000/ffffff?text=Epson+410XL+BK',
+    category: "Inkjet Cartridge",
+    brand: "Epson",
+    quantityInStock: 20,
+    description: "Epson 410XL high capacity black ink cartridge for Expression Premium XP-6000, XP-7100 printers. Page yield: approximately 650 pages."
+  },
+  {
+    id: "12",
+    name: "HP CF283A Black LaserJet Toner Cartridge",
+    price: 2099.99,
+    manufacturer: "HP",
+    type: "toner",
+    stock: 14,
+    imageUrl: 'https://placehold.co/300x300/0066cc/ffffff?text=HP+CF283A',
+    category: "Laser Toner",
+    brand: "HP",
+    quantityInStock: 14,
+    description: "HP CF283A black LaserJet toner cartridge for LaserJet Pro MFP M125, M127, M201, M225 printers. Page yield: approximately 1,500 pages."
+  }
+];

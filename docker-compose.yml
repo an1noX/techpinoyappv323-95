@@ -1,0 +1,8 @@
+version: "3.8"
+
+services:
+  techpinoywebapp:
+    image: jnonymous420/techpinoywebapp:latest   # 🔁 Use your Docker Hub image here
+    ports:
+      - "8084:8084"                     # Assuming app inside container uses port 3000
+    container_name: techpinoywebapp

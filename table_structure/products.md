@@ -1,0 +1,12 @@
+| column_name |
+| ----------- |
+| id          |
+| name        |
+| sku         |
+| category    |
+| description |
+| created_at  |
+| updated_at  |
+| color       |
+| alias       |
+| aliases     |

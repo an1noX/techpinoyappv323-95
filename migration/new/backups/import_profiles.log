@@ -1,0 +1,26 @@
+SET
+SET
+SET
+SET
+SET
+ set_config 
+------------
+ 
+(1 row)
+
+SET
+SET
+SET
+SET
+SET
+SET
+CREATE TABLE
+COPY 6
+ALTER TABLE
+CREATE TRIGGER
+psql:profiles.sql:79: ERROR:  insert or update on table "profiles" violates foreign key constraint "profiles_id_fkey"
+DETAIL:  Key (id)=(f911e40e-3cc3-45c4-8bba-4e73ba654c2f) is not present in table "users".
+CREATE POLICY
+CREATE POLICY
+CREATE POLICY
+ALTER TABLE

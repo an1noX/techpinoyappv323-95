@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CS TechPinoy Net Deployment Guide</title>
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    .tabs { display: flex; flex-wrap: wrap; border-bottom: 1px solid #ccc; }
+    .tabs button {
+      background: #eee;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin-right: 5px;
+    }
+    .tabs button.active {
+      background: #ddd;
+      font-weight: bold;
+    }
+    .tab-content { display: none; padding: 20px 0; }
+    .tab-content.active { display: block; }
+    pre {
+      background: #f4f4f4;
+      padding: 10px;
+      overflow-x: auto;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>TechPinoy WebApp Deployment Guide</h1>
+
+<div class="tabs">
+  <button class="tab-btn active" data-tab="overview">Overview</button>
+  <button class="tab-btn" data-tab="run">Run Options</button>
+  <button class="tab-btn" data-tab="install">Install & Clone</button>
+  <button class="tab-btn" data-tab="docker">Docker Build</button>
+  <button class="tab-btn" data-tab="local">Deploy Locally</button>
+  <button class="tab-btn" data-tab="compose">Docker Compose</button>
+  <button class="tab-btn" data-tab="dns">DNS Configuration</button>
+  <button class="tab-btn" data-tab="nginx">NGINX Setup</button>
+  <button class="tab-btn" data-tab="ssl">SSL Setup</button>
+  <button class="tab-btn" data-tab="hlds">HLDS Game Server (Optional)</button>
+</div>
+
+<div id="overview" class="tab-content active">
+  <p>This guide provides ways to deploy the TechPinoy WebApp using Node.js, Docker, or Docker Compose. <b>Note:</b> The Vite dev server and preview run on <b>8080</b> (development), but Docker/production uses <b>8084</b> as configured in the Dockerfile and docker-compose.yml. For advanced users, HLDS game server deployment is also included.</p>
+</div>
+
+<div id="run" class="tab-content">
+  <h2>Deployment Options Summary</h2>
+  <ol>
+    <li><strong>Local Development (Vite Dev Server)</strong>
+      <pre>
+git clone https://github.com/an1noX/techpinoywebapp.git
+cd techpinoywebapp
+npm install
+npm run dev
+# App runs at http://localhost:8080 (development only)
+      </pre>
+    </li>
+    <li><strong>Production Build & Preview (Local Only)</strong>
+      <pre>
+npm run build
+npm run preview
+# Preview at http://localhost:8080 (local preview only)
+      </pre>
+    </li>
+    <li><strong>Docker (Production)</strong>
+      <pre>
+docker build -t techpinoywebapp .
+docker run -d -p 8084:8084 --name techpinoywebapp techpinoywebapp
+# The app will be available at http://localhost:8084
+      </pre>
+    </li>
+    <li><strong>Docker Compose (Production, using Docker Hub image)</strong>
+      <pre>
+version: "3.8"
+services:
+  techpinoywebapp:
+    image: jnonymous420/techpinoywebapp:latest
+    ports:
+      - "8084:8084"
+    container_name: techpinoywebapp
+      </pre>
+      <pre>docker-compose up -d</pre>
+    </li>
+  </ol>
+  <p><b>Note:</b> All production deployments (Docker, Compose, NGINX) use port <b>8084</b>.</p>
+</div>
+
+<div id="install" class="tab-content">
+  <h2>Clone the Repository</h2>
+  <pre>git clone https://github.com/an1noX/techpinoywebapp.git
+cd techpinoywebapp</pre>
+
+  <h2>Install NGINX (Ubuntu)</h2>
+  <pre>sudo apt update
+sudo apt install nginx -y</pre>
+</div>
+
+<div id="docker" class="tab-content">
+  <h2>Build Docker Image</h2>
+  <pre>docker build -t techpinoywebapp .</pre>
+
+  <h2>Tag & Push to Docker Hub</h2>
+  <pre>
+# Tag your image
+docker tag techpinoywebapp jnonymous420/techpinoywebapp:latest
+# Login to Docker Hub
+docker login
+# Push the image
+docker push jnonymous420/techpinoywebapp:latest
+  </pre>
+</div>
+
+<div id="local" class="tab-content">
+  <h2>Run Docker Image Locally</h2>
+  <pre>
+docker build -t techpinoywebapp .
+docker run -d -p 8084:8084 --name techpinoywebapp techpinoywebapp
+# The app will be available at http://localhost:8084
+  </pre>
+</div>
+
+<div id="compose" class="tab-content">
+  <h2>Docker Compose (Production, using Docker Hub image)</h2>
+  <pre>
+version: "3.8"
+services:
+  techpinoywebapp:
+    image: jnonymous420/techpinoywebapp:latest
+    ports:
+      - "8084:8084"
+    container_name: techpinoywebapp
+  </pre>
+  <h3>Start</h3>
+  <pre>docker-compose up -d</pre>
+</div>
+
+<div id="dns" class="tab-content">
+  <h2>DNS Configuration</h2>
+  <p>To map your domain to your server (e.g., <code>app.techpinoy.net</code>):</p>
+  <ol>
+    <li>Go to your domain registrar (e.g., Namecheap, GoDaddy).</li>
+    <li>Find the DNS settings or Zone Editor.</li>
+    <li>Add an A record:
+      <ul>
+        <li><strong>Type:</strong> A</li>
+        <li><strong>Host:</strong> <code>app</code> or <code>@</code></li>
+        <li><strong>Value:</strong> Your server's public IP</li>
+        <li><strong>TTL:</strong> Automatic or 30 minutes</li>
+      </ul>
+    </li>
+    <li>Save and wait 1–24 hours for DNS propagation.</li>
+  </ol>
+  <p>Verify with:</p>
+  <pre>nslookup app.techpinoy.net
+dig app.techpinoy.net</pre>
+</div>
+
+<div id="nginx" class="tab-content">
+  <h2>NGINX Reverse Proxy</h2>
+  <pre>
+server {
+    listen 80;
+    server_name app.techpinoy.net;
+
+    location / {
+        proxy_pass http://localhost:8084;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+  </pre>
+</div>
+
+<div id="ssl" class="tab-content">
+  <h2>Enable HTTPS with Certbot</h2>
+  <pre>
+sudo apt install certbot python3-certbot-nginx -y
+sudo certbot --nginx -d app.techpinoy.net
+  </pre>
+</div>
+
+<div id="hlds" class="tab-content">
+  <h2>Counter-Strike 1.3 &amp; 1.5 HLDS Game Server (Advanced/Optional)</h2>
+  <p>This section is for deploying a Half-Life Dedicated Server (HLDS) for CS 1.3/1.5. It is not required for the web app.</p>
+  <h3>Docker Image</h3>
+  <pre>docker pull jnonymous420/hlds3109:v1</pre>
+  <h3>Docker Compose Example</h3>
+  <pre>version: '3.8'
+services:
+  hlds_server:
+    image: jnonymous420/hlds3109:v1
+    container_name: counter-strike-server
+    restart: unless-stopped
+    user: "0:0"
+    tty: true
+    stdin_open: true
+    ports:
+      - "27015:27015/udp"
+      - "27015:27015/tcp"
+    volumes:
+      - /opt/hlds_l/cstrike:/server/hlds_l/cstrike
+      - /opt/hlds_l/cstrk15:/server/hlds_l/cstrk15
+    environment:
+      - HLDS_MAP=de_dust2
+      - HLDS_MAXPLAYERS=32
+      - HLDS_IP=0.0.0.0
+      - HLDS_PORT=27015
+      - HLDS_GAME=cstrike  # Use "cstrk15" for CS 1.5
+    command: >
+      ./hlds_run +ip $HLDS_IP +port $HLDS_PORT -game $HLDS_GAME +map $HLDS_MAP +maxplayers $HLDS_MAXPLAYERS -noauth -insecure +sv_lan 1
+    security_opt:
+      - no-new-privileges:true
+  </pre>
+  <h3>Commands</h3>
+  <pre>docker-compose up -d    # Start
+  docker-compose down     # Stop
+  docker logs -f counter-strike-server  # Logs</pre>
+  <h3>Switching Versions</h3>
+  <ul>
+    <li>CS 1.3: <code>HLDS_GAME=cstrike</code></li>
+    <li>CS 1.5: <code>HLDS_GAME=cstrk15</code></li>
+  </ul>
+  <pre>docker-compose down &amp;&amp; docker-compose up -d</pre>
+  <h3>Live Demo</h3>
+  <ul>
+    <li>CS 1.3: <code>cs.techpinoy.net:27015</code></li>
+    <li>CS 1.5: <code>cs.techpinoy.net:27016</code></li>
+  </ul>
+</div>
+
+<script>
+  const buttons = document.querySelectorAll('.tab-btn');
+  const contents = document.querySelectorAll('.tab-content');
+
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      buttons.forEach(b => b.classList.remove('active'));
+      contents.forEach(c => c.classList.remove('active'));
+
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
+    });
+  });
+</script>
+
+</body>
+</html>

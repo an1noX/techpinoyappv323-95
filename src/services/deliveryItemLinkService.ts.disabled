@@ -1,0 +1,252 @@
+import { supabase } from '@/integrations/supabase/client';
+import { DeliveryItemLink, CreateDeliveryItemLinkData, DeliveryItemWithLinks, PurchaseOrderItemWithLinks } from '@/types/deliveryItemLink';
+
+class DeliveryItemLinkService {
+  async createLink(linkData: CreateDeliveryItemLinkData): Promise<DeliveryItemLink> {
+    const { data, error } = await supabase
+      .from('delivery_item_links')
+      .insert(linkData)
+      .select('*')
+      .single();
+
+    if (error) {
+      console.error('Error creating delivery item link:', error);
+      throw error;
+    }
+
+    return data;
+  }
+
+  async deleteLink(linkId: string): Promise<void> {
+    const { error } = await supabase
+      .from('delivery_item_links')
+      .delete()
+      .eq('id', linkId);
+
+    if (error) {
+      console.error('Error deleting delivery item link:', error);
+      throw error;
+    }
+  }
+
+  async getLinksForDelivery(deliveryId: string): Promise<DeliveryItemLink[]> {
+    const { data, error } = await supabase
+      .from('delivery_item_links')
+      .select(`
+        *,
+        delivery_item:delivery_items(
+          id,
+          delivery_id,
+          product_id,
+          quantity_delivered,
+          product:products(*)
+        ),
+        purchase_order_item:purchase_order_items(
+          id,
+          purchase_order_id,
+          product_id,
+          model,
+          quantity,
+          unit_price
+        )
+      `)
+      .eq('delivery_item.delivery_id', deliveryId);
+
+    if (error) {
+      console.error('Error fetching delivery links:', error);
+      throw error;
+    }
+
+    return data || [];
+  }
+
+  async getLinksForPurchaseOrder(purchaseOrderId: string): Promise<DeliveryItemLink[]> {
+    const { data, error } = await supabase
+      .from('delivery_item_links')
+      .select(`
+        *,
+        delivery_item:delivery_items(
+          id,
+          delivery_id,
+          product_id,
+          quantity_delivered,
+          product:products(*),
+          delivery:deliveries(
+            id,
+            delivery_date,
+            delivery_receipt_number
+          )
+        ),
+        purchase_order_item:purchase_order_items(
+          id,
+          purchase_order_id,
+          product_id,
+          model,
+          quantity,
+          unit_price
+        )
+      `)
+      .eq('purchase_order_item.purchase_order_id', purchaseOrderId);
+
+    if (error) {
+      console.error('Error fetching purchase order links:', error);
+      throw error;
+    }
+
+    return data || [];
+  }
+
+  async getDeliveryItemsWithLinks(deliveryId: string): Promise<DeliveryItemWithLinks[]> {
+    // First get all delivery items
+    const { data: deliveryItems, error: itemsError } = await supabase
+      .from('delivery_items')
+      .select(`
+        *,
+        product:products(*)
+      `)
+      .eq('delivery_id', deliveryId);
+
+    if (itemsError) {
+      console.error('Error fetching delivery items:', itemsError);
+      throw itemsError;
+    }
+
+    if (!deliveryItems) return [];
+
+    // Then get all links for these items
+    const { data: links, error: linksError } = await supabase
+      .from('delivery_item_links')
+      .select('*')
+      .in('delivery_item_id', deliveryItems.map(item => item.id));
+
+    if (linksError) {
+      console.error('Error fetching links:', linksError);
+      throw linksError;
+    }
+
+    // Combine the data
+    return deliveryItems.map(item => {
+      const itemLinks = links?.filter(link => link.delivery_item_id === item.id) || [];
+      const linkedQuantity = itemLinks.reduce((sum, link) => sum + link.linked_quantity, 0);
+      const availableQuantity = item.quantity_delivered - linkedQuantity;
+
+      return {
+        ...item,
+        links: itemLinks,
+        available_quantity: availableQuantity,
+        is_fully_linked: availableQuantity === 0
+      };
+    });
+  }
+
+  async getPurchaseOrderItemsWithLinks(purchaseOrderId: string): Promise<PurchaseOrderItemWithLinks[]> {
+    // First get all PO items
+    const { data: poItems, error: itemsError } = await supabase
+      .from('purchase_order_items')
+      .select('*')
+      .eq('purchase_order_id', purchaseOrderId);
+
+    if (itemsError) {
+      console.error('Error fetching PO items:', itemsError);
+      throw itemsError;
+    }
+
+    if (!poItems) return [];
+
+    // Then get all links for these items
+    const { data: links, error: linksError } = await supabase
+      .from('delivery_item_links')
+      .select(`
+        *,
+        delivery_item:delivery_items(
+          delivery:deliveries(
+            delivery_date,
+            delivery_receipt_number
+          )
+        )
+      `)
+      .in('purchase_order_item_id', poItems.map(item => item.id));
+
+    if (linksError) {
+      console.error('Error fetching links:', linksError);
+      throw linksError;
+    }
+
+    // Combine the data
+    return poItems.map(item => {
+      const itemLinks = links?.filter(link => link.purchase_order_item_id === item.id) || [];
+      const linkedQuantity = itemLinks.reduce((sum, link) => sum + link.linked_quantity, 0);
+      const remainingQuantity = item.quantity - linkedQuantity;
+
+      return {
+        ...item,
+        links: itemLinks,
+        linked_quantity: linkedQuantity,
+        remaining_quantity: remainingQuantity,
+        is_fully_linked: remainingQuantity === 0
+      };
+    });
+  }
+
+  async validateLinkCreation(deliveryItemId: string, purchaseOrderItemId: string, linkedQuantity: number): Promise<{ valid: boolean; error?: string }> {
+    // Check if delivery item exists and has enough available quantity
+    const { data: deliveryItem, error: deliveryError } = await supabase
+      .from('delivery_items')
+      .select('quantity_delivered')
+      .eq('id', deliveryItemId)
+      .single();
+
+    if (deliveryError || !deliveryItem) {
+      return { valid: false, error: 'Delivery item not found' };
+    }
+
+    // Check existing links for this delivery item
+    const { data: existingLinks, error: linksError } = await supabase
+      .from('delivery_item_links')
+      .select('linked_quantity')
+      .eq('delivery_item_id', deliveryItemId);
+
+    if (linksError) {
+      return { valid: false, error: 'Error checking existing links' };
+    }
+
+    const totalLinked = existingLinks?.reduce((sum, link) => sum + link.linked_quantity, 0) || 0;
+    const availableQuantity = deliveryItem.quantity_delivered - totalLinked;
+
+    if (linkedQuantity > availableQuantity) {
+      return { valid: false, error: `Only ${availableQuantity} units available for linking` };
+    }
+
+    // Check if PO item exists and has enough remaining quantity
+    const { data: poItem, error: poError } = await supabase
+      .from('purchase_order_items')
+      .select('quantity')
+      .eq('id', purchaseOrderItemId)
+      .single();
+
+    if (poError || !poItem) {
+      return { valid: false, error: 'Purchase order item not found' };
+    }
+
+    // Check existing links for this PO item
+    const { data: poLinks, error: poLinksError } = await supabase
+      .from('delivery_item_links')
+      .select('linked_quantity')
+      .eq('purchase_order_item_id', purchaseOrderItemId);
+
+    if (poLinksError) {
+      return { valid: false, error: 'Error checking PO links' };
+    }
+
+    const totalPOLinked = poLinks?.reduce((sum, link) => sum + link.linked_quantity, 0) || 0;
+    const remainingPOQuantity = poItem.quantity - totalPOLinked;
+
+    if (linkedQuantity > remainingPOQuantity) {
+      return { valid: false, error: `PO item only needs ${remainingPOQuantity} more units` };
+    }
+
+    return { valid: true };
+  }
+}
+
+export const deliveryItemLinkService = new DeliveryItemLinkService();

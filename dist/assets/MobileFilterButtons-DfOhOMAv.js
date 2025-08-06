@@ -1,0 +1,4 @@
+import{j as t}from"./index-FgfazPn4.js";const c=({options:i,activeFilter:n,onFilterChange:l,className:r=""})=>t.jsx("div",{className:`flex gap-1 w-full min-w-0 items-stretch ${r}`,children:i.map(({key:e,label:a,icon:o})=>{const s=n===e;return t.jsxs("button",{type:"button",onClick:()=>l(e),className:`transition-all duration-200 min-w-0 rounded-lg h-full flex items-center justify-center
+              ${s?"flex-[2] bg-blue-600 text-white shadow-md gap-3 px-4 py-3":"flex-1 bg-gray-100 text-gray-700 hover:bg-gray-200 px-0 py-3"}
+            `,"aria-pressed":s,style:{minWidth:0},children:[t.jsx(o,{className:"h-5 w-5 flex-shrink-0"}),s&&t.jsx("span",{className:"text-base font-semibold truncate text-center leading-tight ml-2",children:a})]},e)})});export{c as M};
+//# sourceMappingURL=MobileFilterButtons-DfOhOMAv.js.map

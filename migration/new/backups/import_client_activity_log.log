@@ -1,0 +1,26 @@
+SET
+SET
+SET
+SET
+SET
+ set_config 
+------------
+ 
+(1 row)
+
+SET
+SET
+SET
+SET
+SET
+SET
+CREATE TABLE
+COPY 5
+ALTER TABLE
+CREATE INDEX
+ALTER TABLE
+psql:client_activity_log.sql:89: ERROR:  insert or update on table "client_activity_log" violates foreign key constraint "client_activity_log_performed_by_fkey"
+DETAIL:  Key (performed_by)=(f911e40e-3cc3-45c4-8bba-4e73ba654c2f) is not present in table "users".
+CREATE POLICY
+CREATE POLICY
+ALTER TABLE

@@ -1,0 +1,3 @@
+- When a role (client) adds a printer, it will go to 'pending' status and needs to be approved by an admin.
+- Pending status printers will be displayed in the 'Inventory' tab in /printer-dashboard.
+- A printer added by a client will also be displayed in the selected department-location, shown in yellow with a 'pending' badge until approved. 
