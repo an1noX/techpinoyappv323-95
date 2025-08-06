@@ -428,10 +428,56 @@ export const PurchaseOrdersTable: React.FC<PurchaseOrdersTableProps> = ({
     });
   }, []);
 
-  // Get PO numbers in the order they are provided (already sorted by parent)
+  // Sort PO numbers based on sortConfig
   const sortedPONumbers = useMemo(() => {
-    return Object.keys(filteredPOs);
-  }, [filteredPOs]);
+    const poNumbers = Object.keys(filteredPOs);
+    
+    if (!sortConfig) {
+      return poNumbers;
+    }
+    
+    return poNumbers.sort((a, b) => {
+      const poGroupA = filteredPOs[a];
+      const poGroupB = filteredPOs[b];
+      
+      if (!poGroupA?.[0] || !poGroupB?.[0]) return 0;
+      
+      const poA = poGroupA[0];
+      const poB = poGroupB[0];
+      
+      let valueA: any;
+      let valueB: any;
+      
+      switch (sortConfig.column) {
+        case 'date':
+          valueA = new Date(poA.po_date || poA.created_at).getTime();
+          valueB = new Date(poB.po_date || poB.created_at).getTime();
+          break;
+        case 'po':
+          valueA = poA.client_po || '';
+          valueB = poB.client_po || '';
+          break;
+        case 'dr':
+          valueA = deliveryReceiptsByPO[a]?.[0] || '';
+          valueB = deliveryReceiptsByPO[b]?.[0] || '';
+          break;
+        case 'si':
+          valueA = salesInvoicesByPO[a]?.[0] || '';
+          valueB = salesInvoicesByPO[b]?.[0] || '';
+          break;
+        case 'amount':
+          valueA = calculateTaxAdjustedTotal(poA);
+          valueB = calculateTaxAdjustedTotal(poB);
+          break;
+        default:
+          return 0;
+      }
+      
+      if (valueA < valueB) return sortConfig.direction === 'asc' ? -1 : 1;
+      if (valueA > valueB) return sortConfig.direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }, [filteredPOs, sortConfig, deliveryReceiptsByPO, salesInvoicesByPO, calculateTaxAdjustedTotal]);
 
   // Render column header with resize and drag functionality
   const renderColumnHeader = (column: typeof displayColumns[0], index: number) => {
