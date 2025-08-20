@@ -165,16 +165,10 @@ export const PurchaseOrdersTable: React.FC<PurchaseOrdersTableProps> = ({
   
   const { poSuggestions, getPOSuggestions, clearSuggestions } = usePOSuggestions();
 
-  // Get visible columns with proper width data
+  // Get visible and ordered columns
   const displayColumns = useMemo(() => {
-    return COLUMN_CONFIG
-      .filter(col => visibleColumns.includes(col.key))
-      .map(configCol => {
-        // Find the corresponding column with width data from sortedColumns
-        const columnWithWidth = sortedColumns.find(c => c.key === configCol.key);
-        return columnWithWidth || { ...configCol, width: configCol.defaultWidth };
-      });
-  }, [visibleColumns, sortedColumns]);
+    return sortedColumns.filter(col => visibleColumns.includes(col.key));
+  }, [sortedColumns, visibleColumns]);
 
   // Memoize filter options
   const filterOptions = useMemo(() => ({
@@ -428,56 +422,10 @@ export const PurchaseOrdersTable: React.FC<PurchaseOrdersTableProps> = ({
     });
   }, []);
 
-  // Sort PO numbers based on sortConfig
+  // Get PO numbers in the order they are provided (already sorted by parent)
   const sortedPONumbers = useMemo(() => {
-    const poNumbers = Object.keys(filteredPOs);
-    
-    if (!sortConfig) {
-      return poNumbers;
-    }
-    
-    return poNumbers.sort((a, b) => {
-      const poGroupA = filteredPOs[a];
-      const poGroupB = filteredPOs[b];
-      
-      if (!poGroupA?.[0] || !poGroupB?.[0]) return 0;
-      
-      const poA = poGroupA[0];
-      const poB = poGroupB[0];
-      
-      let valueA: any;
-      let valueB: any;
-      
-      switch (sortConfig.column) {
-        case 'date':
-          valueA = new Date(poA.po_date || poA.created_at).getTime();
-          valueB = new Date(poB.po_date || poB.created_at).getTime();
-          break;
-        case 'po':
-          valueA = poA.client_po || '';
-          valueB = poB.client_po || '';
-          break;
-        case 'dr':
-          valueA = deliveryReceiptsByPO[a]?.[0] || '';
-          valueB = deliveryReceiptsByPO[b]?.[0] || '';
-          break;
-        case 'si':
-          valueA = salesInvoicesByPO[a]?.[0] || '';
-          valueB = salesInvoicesByPO[b]?.[0] || '';
-          break;
-        case 'amount':
-          valueA = calculateTaxAdjustedTotal(poA);
-          valueB = calculateTaxAdjustedTotal(poB);
-          break;
-        default:
-          return 0;
-      }
-      
-      if (valueA < valueB) return sortConfig.direction === 'asc' ? -1 : 1;
-      if (valueA > valueB) return sortConfig.direction === 'asc' ? 1 : -1;
-      return 0;
-    });
-  }, [filteredPOs, sortConfig, deliveryReceiptsByPO, salesInvoicesByPO, calculateTaxAdjustedTotal]);
+    return Object.keys(filteredPOs);
+  }, [filteredPOs]);
 
   // Render column header with resize and drag functionality
   const renderColumnHeader = (column: typeof displayColumns[0], index: number) => {
@@ -550,15 +498,8 @@ export const PurchaseOrdersTable: React.FC<PurchaseOrdersTableProps> = ({
                 onClick={() => onSort('date')} 
                 className="cursor-pointer flex items-center justify-between"
               >
-                <span>Sort by Date</span>
+                <span>All Dates</span>
                 {getSortIcon('date')}
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem 
-                onClick={() => setFilters({...filters, dateRange: 'all'})} 
-                className={cn("cursor-pointer", filters.dateRange === 'all' && 'bg-accent font-medium')}
-              >
-                All Dates
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem 
@@ -666,7 +607,7 @@ export const PurchaseOrdersTable: React.FC<PurchaseOrdersTableProps> = ({
                 onClick={() => onSort('po')} 
                 className="cursor-pointer flex items-center justify-between"
               >
-                <span>Sort by PO#</span>
+                <span>All PO Numbers</span>
                 {getSortIcon('po')}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
@@ -702,17 +643,10 @@ export const PurchaseOrdersTable: React.FC<PurchaseOrdersTableProps> = ({
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56 bg-popover border border-border shadow-lg z-[60]" align="start">
               <DropdownMenuItem 
-                onClick={() => setFilters({...filters, drNumber: 'all'})} 
-                className={cn("cursor-pointer", filters.drNumber === 'all' && 'bg-accent font-medium')}
-              >
-                All DR Numbers
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem 
                 onClick={() => onSort('dr')} 
                 className="cursor-pointer flex items-center justify-between"
               >
-                <span>Sort by DR#</span>
+                <span>All DR Numbers</span>
                 {getSortIcon('dr')}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
@@ -748,17 +682,10 @@ export const PurchaseOrdersTable: React.FC<PurchaseOrdersTableProps> = ({
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56 bg-popover border border-border shadow-lg z-[60]" align="start">
               <DropdownMenuItem 
-                onClick={() => setFilters({...filters, siNumber: 'all'})} 
-                className={cn("cursor-pointer", filters.siNumber === 'all' && 'bg-accent font-medium')}
-              >
-                All SI Numbers
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem 
                 onClick={() => onSort('si')} 
                 className="cursor-pointer flex items-center justify-between"
               >
-                <span>Sort by SI#</span>
+                <span>All SI Numbers</span>
                 {getSortIcon('si')}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
